@@ -1,0 +1,48 @@
+<%- include('../includes/head.ejs')%>
+<%- include('../includes/nav.ejs')%>
+<body>
+    <% if(prods.length == 0) { %>
+        <h1>No products</h1> 
+    <% } %>
+    <% if(prods.length > 0) { %>
+        <h1>Showing all the products</h1>   
+        <div class="mybox">
+            <% for(let i = 0 ; i < prods.length ; i++) { %>
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src='/<%= prods[i].imageUrl %>' alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= prods[i].title %></h5>
+                        <p class="card-text"> <%= prods[i].description %> </p>
+                        <p class="card-text"> $ <%= prods[i].price %> </p>
+                        <button class="btn btn-primary mb-3" onclick="window.open('/products/<%= prods[i]._id %>', '_self')">Details</button>
+
+                        <% if (isAuthenticated){%>
+                        <form action="/add-to-cart" method="POST">
+                        
+                            <input type="hidden" name="id" value="<%= prods[i]._id %>">
+                            <button type="submit" class="btn btn-primary">add to cart</button>
+                        </form>
+                        <%}%>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+        <div class="my-page">
+            <% if(currentPage != 1 && previousPage != 1){ %>
+                <a class="page-item" href="?page=1">1</a>
+            <% } %>
+            <% if(hasPrevPage){ %>
+                <a class = "page-item" href="?page=<%=previousPage%>"><%=previousPage%></a>
+            <% } %>
+            <a class = "page-item" href="?page=<%=currentPage%>"><%=currentPage%></a>
+            <% if(hasNextPage){ %>
+                <a class = "page-item" href="?page=<%=nextPage%>"><%=nextPage%></a>
+            <% } %>
+            <% if(lastPage != currentPage && nextPage != lastPage){ %>
+                <a class = "page-item" href="?page=<%=lastPage%>"><%=lastPage%></a>
+            <% } %>
+        </div>
+    <% } %>
+    
+</body>
+</html>

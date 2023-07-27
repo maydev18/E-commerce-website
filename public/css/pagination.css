@@ -1,0 +1,8 @@
+.my-page{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.page-item{
+    text-decoration: none;
+}

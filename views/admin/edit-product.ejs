@@ -1,0 +1,37 @@
+<%- include('../includes/head.ejs')%>
+<%- include('../includes/nav.ejs')%>
+<body>
+    <% if(errorMessage) {%>
+        <h1 id="heading"><%= errorMessage %></h1>
+    <%}%>
+    <div class="container">
+        <form action="/admin/<%if(editing){%>edit-product<% }else{%>add-product<%}%>" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" aria-describedby="emailHelp" name="title" value = "<%if(editing || hasError) { %><%=product.title%><% } %>">
+            </div>
+            <!-- <div class="mb-3">
+                <label for="imageurl" class="form-label">image url</label>
+                <input type="text" class="form-control" id="image url" aria-describedby="emailHelp" name="imageurl" value = "<%if(editing || hasError) { %> <%=product.imageUrl%> <% } %>">
+            </div> -->
+            <div class="mb-3">
+                <label for="price" class="form-label">price</label>
+                <input type="text" class="form-control" id="price" aria-describedby="emailHelp" name="price" value = "<%if(editing || hasError) { %><%=product.price%><% } %>">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" rows="3" name="description"><%if(editing || hasError){%><%=product.description%><%}%></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">image</label>
+                <input type="file" class="form-control" id="image" aria-describedby="emailHelp" name="image">
+            </div>
+            <%  if (editing) { %>
+                <input type="hidden" name="productID" value = <%= product._id %> %> >
+            <% } %>
+            <button type="submit" class="btn btn-primary"> <% if(editing) { %> update product <% } else { %> Add Product <% } %> </button>
+        </form>
+    </div>
+</body>
+
+</html>

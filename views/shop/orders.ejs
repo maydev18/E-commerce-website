@@ -1,0 +1,21 @@
+<%- include('../includes/head.ejs')%>
+<%- include('../includes/nav.ejs')%>
+<body>
+    <%if (orders.length == 0) { %>
+        <h1>No items here</h1>
+    <% } else { %>
+        <ul>
+            <% for(let order of orders) { %>
+                <li>
+                    <h1> # <%= order._id %></h1>
+                    <a href="/orders/<%=order._id%>">Download Invoice</a>
+                    <ul>
+                        <% order.products.forEach(product=> { %>
+                            <li><%= product.product.title %> { <%=product.quantity%>  }</li>
+                        <% }); %>
+                    </ul>
+                </li>
+            <% } %>
+        </ul>
+    <% } %>
+</body>

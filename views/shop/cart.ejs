@@ -1,0 +1,28 @@
+<%- include('../includes/head.ejs')%>
+<%- include('../includes/nav.ejs')%>
+<body>
+    <%if (products.length == 0) { %>
+        <h1>No items in the cart</h1>
+    <% } else { %>
+        <ul>
+            <% for(let p of products) { %>
+                <li>
+                    <%= p.productId.title %>
+                    <ul>
+                        <li>total price = <%= p.productId.price * p.quantity %></li>
+                        <li>total quantity = <%= p.quantity %></li>
+                        <form action="/delete-cart-item" method="POST">
+                            <input type="hidden" value="<%= p.productId._id %>" name="id">
+                            <button type="submit" class="btn btn-primary">Delete Item</button>
+                        </form>
+                    </ul>
+                </li>
+            <% } %>
+        </ul>
+        <!-- <form action="/create-order" method="POST">
+            <input type="hidden" value="" name="id">
+            <button type="submit" class="btn btn-primary">Checkout</button>
+        </form> -->
+        <a href="/checkout" class="btn btn-primary">Order Now</a>
+    <% } %>
+</body>

@@ -1,0 +1,28 @@
+<%- include('../includes/head.ejs')%>
+<%- include('../includes/nav.ejs')%>
+<body>
+    <% if(prods.length == 0) { %>
+        <h1>No products</h1> 
+    <% } %>
+    <% if(prods.length > 0) { %>
+        <h1>Showing all the products</h1>   
+        <div class="mybox">
+            <% for(let i = 0 ; i < prods.length ; i++) { %>
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src='/<%= prods[i].imageUrl %>' alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= prods[i].title %></h5>
+                        <p class="card-text"> <%= prods[i].description %> </p>
+                        <p class="card-text"> $ <%= prods[i].price %> </p>
+                        <button type="submit" class="btn btn-primary" onclick="window.open('/admin/edit-product/<%= prods[i]._id %>', '_self')">Edit</button>
+                            <input type="hidden" name="id" value="<%= prods[i]._id %>">
+                            <button type="button" onclick="deleteProduct(this)" class="btn btn-primary">Delete</button>
+                    </div>
+                </div>
+                
+            <% } %>
+        </div>
+    <% } %>
+</body>
+</html>
+<script src="/js/admin.js"></script>

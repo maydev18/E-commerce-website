@@ -1,0 +1,20 @@
+<%- include('../includes/head.ejs')%>
+<style>
+  #heading{
+    background-color: aqua;
+  }
+</style>
+<body>
+  <% if(errorMessage) {%>
+    <h1 id="heading"><%= errorMessage %></h1>
+<%}%>
+    <div class="container">
+        <form action="/reset" method="POST">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+    </div>
+</body>
