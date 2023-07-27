@@ -28,7 +28,6 @@ app.set('views', 'views');//not needed as it is default.
 
 app.use(compression());
 
-app.use(morgan("combined"));
 app.use(bodyParser.urlencoded({extended : false}));
 const fileStorage = multer.diskStorage({
     destination : (req , file , cb)=>{
