@@ -14,7 +14,6 @@ const User = require('./models/user');
 const flash = require('connect-flash');
 const csrf = require('csurf');
 
-const helmet = require("helmet");
 
 const compression = require("compression");
 
@@ -26,7 +25,6 @@ const store = new MongoDBStore({
 app.set('view engine', 'ejs');
 app.set('views', 'views');//not needed as it is default.
 
-app.use(helmet());
 
 app.use(compression());
 
