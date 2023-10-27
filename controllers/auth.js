@@ -174,13 +174,15 @@ exports.postReset = (req , res , next) => {
             return user.save();
         })
         .then(result => {
+            console.log(req.body.baseurl);
+            url = req.body.baseurl + "/" + token;
             const mailOptions = {
                 from: 'ms772254@gmail.com',
                 to: req.body.email,
                 subject: 'Reset Password',
                 html : `
                     <p>You requested a password reset </p>
-                    <p>Click this <a href = "http://localhost:3000/reset/${token}"> click  </a> </p>
+                    <p>Click this <a href = ${url}> click  </a> </p>
                 `
             };
             mail.mail(mailOptions);
