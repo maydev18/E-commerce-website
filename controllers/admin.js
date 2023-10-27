@@ -1,7 +1,6 @@
 const Product = require('../models/product');
 // const ObjectId = require('mongodb').ObjectId;
 
-
 const fileHelper = require('../utils/file');
 const {validationResult} = require('express-validator');
 exports.getAddProducts = (req, res, next) => {
@@ -122,7 +121,6 @@ exports.postEditProduct = (req , res , next) =>{
             title : updatedTitle,
             price : updatedPrice,
             description : updatedDescription,
-            imageUrl : updatedURL,
             _id : productID
         }, 
         pagetitle: "Edit Product",

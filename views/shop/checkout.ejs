@@ -1,23 +1,109 @@
 <%- include('../includes/head.ejs')%>
 <%- include('../includes/nav.ejs')%>
 <body>
-    <ul>
-        <% for(let p of products) { %>
-            <li>
-                <%= p.productId.title %>
-                <ul>
-                    <li>total price = <%= p.productId.price * p.quantity %></li>
-                    <li>total quantity = <%= p.quantity %></li>
-                </ul>
-            </li>
-        <% } %>
-    </ul>
-    <div>
-        <h1>Total Price = <%=totalCost%></h1>
+    <!-- Checkout Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-lg-8">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Shipping Address</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>First Name</label>
+                            <input class="form-control" type="text" placeholder="Mayank">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Last Name</label>
+                            <input class="form-control" type="text" placeholder="Sharma">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>E-mail</label>
+                            <input class="form-control" type="text" placeholder="example@email.com">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Mobile No</label>
+                            <input class="form-control" type="text" placeholder="+91 4566776489">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Address Line 1</label>
+                            <input class="form-control" type="text" placeholder="123 Street">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Address Line 2</label>
+                            <input class="form-control" type="text" placeholder="123 Street">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Country</label>
+                            <select class="custom-select">
+                                <option selected>India</option>
+                                <option>USA</option>
+                                <option>Canada</option>
+                                <option>Dubai</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>City</label>
+                            <input class="form-control" type="text" placeholder="New Delhi">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>State</label>
+                            <input class="form-control" type="text" placeholder="Delhi">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>ZIP Code</label>
+                            <input class="form-control" type="text" placeholder="110000">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Order Total</span></h5>
+                <div class="bg-light mb-5" style="padding: 1em;">
+                    <div class="border-bottom">
+                        <div class="container-fluid">
+                            <div class="row px-xl-">
+                                <div class="col-lg- table-responsive mb-5">
+                                    <table class="table table-light table-borderless table-hover text-center mb-0">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Products</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="align-middle">
+                                            <% products.forEach(product => { %>
+                                                <tr>
+                                                    <td class="align-middle"><%=product.productId.title %></td>
+                                                    <td class="align-middle">₹ <%=product.productId.price %></td>
+                                                    <td class="align-middle"><%=product.quantity %></td>
+                                                    <td class="align-middle">₹ <%= product.productId.price * product.quantity %></td>
+                                                </tr>
+                                            <% }) %>
+                                            <tr class="align-middle">
+                                                <td colspan="3"><b>Your order total </b></td>
+                                                <td><b><%=totalCost%></b></td>
+                                            </tr>
+                                            <tr class="align-middle">
+                                                <td colspan="4">
+                                                    <button class="btn btn-primary" id="btn">Order Now</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- Checkout End -->
     <div>
         <script src="https://js.stripe.com/v3/"></script>
-        <button class="btn btn-primary" id="btn">Order</button>
+        
         <script>
             var stripe = Stripe("pk_test_51NX4AcSI0QNtFF7dADqhg2533I2z0M0zGAiYuJ63j21AlQ3InnhCfhBFAgMBLW6dXmaJNAPKFgoTZCt5haMSnify00VjaAqM4v");
             let btn = document.getElementById('btn');
@@ -30,4 +116,5 @@
             })
         </script>
     </div>
+    <%- include('../includes/footer.ejs')%>
 </body>

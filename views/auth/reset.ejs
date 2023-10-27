@@ -1,4 +1,5 @@
 <%- include('../includes/head.ejs')%>
+
 <style>
   #heading{
     background-color: aqua;
@@ -8,6 +9,7 @@
   <% if(errorMessage) {%>
     <h1 id="heading"><%= errorMessage %></h1>
 <%}%>
+<%- include('../includes/nav.ejs')%>
     <div class="container">
         <form action="/reset" method="POST">
             <div class="mb-3">
@@ -17,4 +19,5 @@
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
     </div>
+    <%- include('../includes/footer.ejs')%>
 </body>

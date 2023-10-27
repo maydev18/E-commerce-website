@@ -3,6 +3,7 @@
     <% if(errorMessage) {%>
         <h1><%= errorMessage %></h1>
     <%}%>
+    <%- include('../includes/nav.ejs')%>
     <div class="container">
         <form action="/signup" method="POST" novalidate>
             <div class="mb-3">
@@ -21,4 +22,5 @@
             <button type="submit" class="btn btn-primary">Sign up</button>
           </form>
     </div>
+    <%- include('../includes/footer.ejs')%>
 </body>

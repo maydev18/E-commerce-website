@@ -8,7 +8,7 @@ const Order = require('../models/order');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
 
 const pdf = require('pdfkit');
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 10;
 let total_items;
 exports.getProducts = (req, res, next) => {
     const page = +req.query.page || 1;
@@ -19,7 +19,7 @@ exports.getProducts = (req, res, next) => {
         return Product.find().skip((page-1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE);
     })
     .then(products => {
-        console.log(products);
+        // console.log(products);
         res.render('shop/product-list.ejs', { prods: products, pagetitle: "home page",
         path: '/',
         isAuthenticated: req.session.isloggedin,
@@ -41,11 +41,15 @@ exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productID;
     Product.findById(productId)
         .then((product) => {
-            res.render('shop/product-details.ejs', {
-                product: product,
-                pagetitle: product.title,
-                isAuthenticated: req.session.isloggedin
-            });
+            Product.find()
+            .then(products => {
+                res.render('shop/product-details.ejs', {
+                    product: product,
+                    products : products,
+                    pagetitle: product.title,
+                    isAuthenticated: req.session.isloggedin
+                });
+            })           
         })
         .catch(err => {
             const error = new Error(err);
@@ -73,6 +77,7 @@ exports.postCart = (req, res, next) => {
 exports.getCart = async (req, res, next) => {
     req.user.populate('cart.items.productId')
         .then(user => {
+            console.log(user.cart.items);
             res.render('shop/cart', {
                 products: user.cart.items,
                 pagetitle: 'cart',
@@ -99,15 +104,12 @@ exports.postDeleteCartItem = (req, res, next) => {
         })
 };
 
-exports.getCheckout = (req , res , next) => {
+exports.postCheckout = (req , res , next) => {
     let products;
-    let tot = 0;
+    let tot = req.body.amount;
     req.user.populate('cart.items.productId')
     .then(user => {
         products = user.cart.items;
-        products.forEach(prod => {
-            tot += prod.quantity * prod.productId.price;
-        });
         return stripe.checkout.sessions.create({
             payment_method_types : ['card'],
             line_items : products.map(p=> {
@@ -124,8 +126,8 @@ exports.getCheckout = (req , res , next) => {
                   };
             }),
             mode : "payment",
-            success_url : req.protocol + "://" +req.get('host') + '/checkout/success',
-            cancel_url : req.protocol + "://" +req.get('host') + '/checkout/cancel'
+            success_url : req.protocol + "://" + req.get('host') + '/checkout/success',
+            cancel_url : req.protocol + "://" + req.get('host') + '/checkout/cancel'
         });
     })
     .then(session => {
@@ -145,39 +147,6 @@ exports.getCheckout = (req , res , next) => {
     })
 };
 exports.getCheckoutSuccess = (req, res, next) => {
-    req.user.populate('cart.items.productId')
-        .then(user => {
-            const products = user.cart.items.map(i => {
-                return { quantity: i.quantity, product: { ...i.productId._doc } };
-            })
-            const order = new Order({
-                user: {
-                    email: req.user.email,
-                    userId: req.user._id
-                },
-                products: products
-            })
-            return order.save()
-        })
-        .then(result => {
-            req.user.cart = [{}];
-            req.user.save().then(result => {
-                res.redirect("/orders");
-            })
-                .catch(err => {
-                    const error = new Error(err);
-                    error.httpStatusCode = 500;
-                    return next(error);
-                })
-        })
-        .catch(err => {
-            const error = new Error(err);
-            error.httpStatusCode = 500;
-            return next(error);
-        })
-}
-
-exports.postCreateOrder = (req, res, next) => {
     req.user.populate('cart.items.productId')
         .then(user => {
             const products = user.cart.items.map(i => {

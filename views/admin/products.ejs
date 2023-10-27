@@ -1,28 +1,34 @@
 <%- include('../includes/head.ejs')%>
-<%- include('../includes/nav.ejs')%>
 <body>
+    <%- include('../includes/nav.ejs')%>
     <% if(prods.length == 0) { %>
         <h1>No products</h1> 
-    <% } %>
-    <% if(prods.length > 0) { %>
-        <h1>Showing all the products</h1>   
-        <div class="mybox">
+    <% }else{ %>
+    <div class="container-fluid pt-5 pb-3">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Your Products</span></h2>
+        <div class="row px-xl-5">
             <% for(let i = 0 ; i < prods.length ; i++) { %>
-                <div class="card" style="width: 18rem;">
-                    <img class="card-img-top" src='/<%= prods[i].imageUrl %>' alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= prods[i].title %></h5>
-                        <p class="card-text"> <%= prods[i].description %> </p>
-                        <p class="card-text"> $ <%= prods[i].price %> </p>
-                        <button type="submit" class="btn btn-primary" onclick="window.open('/admin/edit-product/<%= prods[i]._id %>', '_self')">Edit</button>
+                <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                    <div class="product-item bg-light mb-4">
+                        <div class="product-img position-relative overflow-hidden">
+                            <img class="img-fluid w-100" src="/<%= prods[i].imageUrl %>" alt="">
+                        </div>
+                        <div class="text-center py-4">
+                            <a class="h6 text-decoration-none text-truncate" href=""><%= prods[i].title %></a>
+                            <div class="d-flex align-items-center justify-content-center mt-2">
+                                <h5>₹ <%= prods[i].price %> </h5>
+                            </div>
+                            <button type="submit" class="btn btn-primary mybtn" onclick="window.open('/admin/edit-product/<%= prods[i]._id %>', '_self')">Edit</button>
                             <input type="hidden" name="id" value="<%= prods[i]._id %>">
-                            <button type="button" onclick="deleteProduct(this)" class="btn btn-primary">Delete</button>
+                            <button type="button" onclick="deleteProduct(this)" class="btn btn-primary mybtn">Delete</button>
+                        </div>
                     </div>
                 </div>
-                
             <% } %>
         </div>
+    </div>
     <% } %>
+    <%- include('../includes/footer.ejs')%>
 </body>
 </html>
 <script src="/js/admin.js"></script>

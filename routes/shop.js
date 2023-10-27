@@ -19,9 +19,9 @@ router.post('/add-to-cart' , isAuth , shopController.postCart);
 
 router.post('/delete-cart-item' , isAuth ,  shopController.postDeleteCartItem);
 
-router.get('/checkout' ,isAuth ,  shopController.getCheckout);
+router.post('/checkout' ,isAuth ,  shopController.postCheckout);
 router.get('/checkout/success' ,isAuth ,  shopController.getCheckoutSuccess);
-router.get('/checkout/cancel' ,shopController.getCheckout);
+router.get('/checkout/cancel' ,shopController.getCart);
 // router.post('/create-order' , isAuth ,  shopController.postCreateOrder);
 
 router.get('/orders' , isAuth ,  shopController.getOrders);

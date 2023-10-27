@@ -12,10 +12,8 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const User = require('./models/user');
 const flash = require('connect-flash');
-const csrf = require('csurf');
 
-const helmet = require("helmet");
-
+// const helmet = require("helmet");
 const compression = require("compression");
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.xpmtenf.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
@@ -26,11 +24,10 @@ const store = new MongoDBStore({
 app.set('view engine', 'ejs');
 app.set('views', 'views');//not needed as it is default.
 
-app.use(helmet());
+// app.use(helmet());
 
 app.use(compression());
 
-app.use(morgan("combined"));
 app.use(bodyParser.urlencoded({extended : false}));
 const fileStorage = multer.diskStorage({
     destination : (req , file , cb)=>{
