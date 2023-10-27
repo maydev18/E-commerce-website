@@ -12,6 +12,8 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const User = require('./models/user');
 const flash = require('connect-flash');
+const csrf = require('csurf');
+
 
 // const helmet = require("helmet");
 const compression = require("compression");
