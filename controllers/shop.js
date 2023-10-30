@@ -4,52 +4,71 @@ const User = require('../models/user');
 const fs = require('fs');
 const path = require('path');
 const Order = require('../models/order');
+const Review = require("../models/review");
 // const stripe = require('stripe')('sk_test_51NX4AcSI0QNtFF7dckwSjY5HYQdDUAf0yHxPghKkihPPHCTBbk9ogrGjdMYVCVojjtunA1Wza0wdVDlN3UgAMptY00yTEfURQG');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
-
 const pdf = require('pdfkit');
 const ITEMS_PER_PAGE = 10;
 let total_items;
 exports.getProducts = (req, res, next) => {
     const page = +req.query.page || 1;
     Product.find()
-    .countDocuments()
-    .then(numPro => {
-        total_items = numPro;
-        return Product.find().skip((page-1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE);
-    })
-    .then(products => {
-        // console.log(products);
-        res.render('shop/product-list.ejs', { prods: products, pagetitle: "home page",
-        path: '/',
-        isAuthenticated: req.session.isloggedin,
-        currentPage : page,
-        hasNextPage : ITEMS_PER_PAGE * page < total_items,
-        hasPrevPage : page > 1,
-        nextPage : page+1,
-        previousPage : page-1,
-        lastPage : Math.ceil(total_items/ITEMS_PER_PAGE)
-     });
-    }).catch(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
-    });
+        .countDocuments()
+        .then(numPro => {
+            total_items = numPro;
+            return Product.find().skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE);
+        })
+        .then(products => {
+            // console.log(products);
+            res.render('shop/product-list.ejs', {
+                prods: products, pagetitle: "home page",
+                path: '/',
+                isAuthenticated: req.session.isloggedin,
+                currentPage: page,
+                hasNextPage: ITEMS_PER_PAGE * page < total_items,
+                hasPrevPage: page > 1,
+                nextPage: page + 1,
+                previousPage: page - 1,
+                lastPage: Math.ceil(total_items / ITEMS_PER_PAGE)
+            });
+        }).catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
 };
 
 exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productID;
+    const userId = req.user._id;
+    let prod, prods;
+    let user_bought_product = 0;
     Product.findById(productId)
         .then((product) => {
-            Product.find()
-            .then(products => {
-                res.render('shop/product-details.ejs', {
-                    product: product,
-                    products : products,
-                    pagetitle: product.title,
-                    isAuthenticated: req.session.isloggedin
-                });
-            })           
+            prod = product;
+            return Product.find()
+        })
+        .then(products => {
+            prods = products
+            return Order.find({ 'user.userId': userId })
+        })
+        .then(orders => {
+            orders.forEach(order => {
+                order.products.forEach(product => {
+                    if (product.product._id.toString() === productId.toString()) user_bought_product = 1;
+                })
+            })
+            return Review.find({ productId: productId })
+        })
+        .then(reviews => {
+            res.render('shop/product-details.ejs', {
+                user_bought_product: user_bought_product,
+                product: prod,
+                products: prods,
+                pagetitle: prod.title,
+                isAuthenticated: req.session.isloggedin,
+                reviews: reviews
+            });
         })
         .catch(err => {
             const error = new Error(err);
@@ -57,7 +76,31 @@ exports.getProductDetails = (req, res, next) => {
             return next(error);
         });
 };
-
+exports.postAddReview = (req , res , next) => {
+    const prodId = req.body.productId;
+    const desc = req.body.description;
+    const stars = req.body.stars;
+    const userId = req.user._id;
+    const date = new Date();
+    const name = req.body.name;
+    const review = new Review({
+        stars : stars,
+        description : desc,
+        userId : userId,
+        productId : prodId,
+        date : date,
+        name : name
+    })
+    review.save()
+    .then(result => {
+        res.redirect("/products/" + prodId);
+    })
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    })
+}
 
 exports.postCart = (req, res, next) => {
     const id = req.body.id;
@@ -104,47 +147,47 @@ exports.postDeleteCartItem = (req, res, next) => {
         })
 };
 
-exports.postCheckout = (req , res , next) => {
+exports.postCheckout = (req, res, next) => {
     let products;
     let tot = req.body.amount;
     req.user.populate('cart.items.productId')
-    .then(user => {
-        products = user.cart.items;
-        return stripe.checkout.sessions.create({
-            payment_method_types : ['card'],
-            line_items : products.map(p=> {
-                return {
-                    price_data: {
-                      currency: 'INR',
-                      product_data: {
-                        name: p.productId.title,
-                        description: p.productId.description,
-                      },
-                      unit_amount: p.productId.price * 100,
-                    },
-                    quantity: p.quantity,
-                  };
-            }),
-            mode : "payment",
-            success_url : req.protocol + "://" + req.get('host') + '/checkout/success',
-            cancel_url : req.protocol + "://" + req.get('host') + '/checkout/cancel'
-        });
-    })
-    .then(session => {
-        res.render('shop/checkout', {
-            products: req.user.cart.items,
-            pagetitle: 'checkout',
-            path: "/checkout",
-            isAuthenticated: req.session.isloggedin,
-            totalCost : tot,
-            sessionId : session.id
+        .then(user => {
+            products = user.cart.items;
+            return stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: products.map(p => {
+                    return {
+                        price_data: {
+                            currency: 'INR',
+                            product_data: {
+                                name: p.productId.title,
+                                description: p.productId.description,
+                            },
+                            unit_amount: p.productId.price * 100,
+                        },
+                        quantity: p.quantity,
+                    };
+                }),
+                mode: "payment",
+                success_url: req.protocol + "://" + req.get('host') + '/checkout/success',
+                cancel_url: req.protocol + "://" + req.get('host') + '/checkout/cancel'
+            });
         })
-    })
-    .catch(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
-    })
+        .then(session => {
+            res.render('shop/checkout', {
+                products: req.user.cart.items,
+                pagetitle: 'checkout',
+                path: "/checkout",
+                isAuthenticated: req.session.isloggedin,
+                totalCost: tot,
+                sessionId: session.id
+            })
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        })
 };
 exports.getCheckoutSuccess = (req, res, next) => {
     req.user.populate('cart.items.productId')
@@ -212,8 +255,8 @@ exports.getInvoice = (req, res, next) => {
         res.setHeader('Content-Desposition', 'inline; filename="' + invoiceName + '"');
         pdfDoc.pipe(fs.createWriteStream(invoicePath));
         pdfDoc.pipe(res);
-        pdfDoc.fontSize(26).text("invoice" , {
-            underline : true
+        pdfDoc.fontSize(26).text("invoice", {
+            underline: true
         });
         pdfDoc.text("---------------------------");
         let tot = 0;
