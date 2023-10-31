@@ -37,7 +37,21 @@ exports.getProducts = (req, res, next) => {
             return next(error);
         });
 };
-
+exports.getProfile = (req , res , next) =>{
+    User.findById(req.user._id)
+    .then(user => {
+        res.render("shop/profile.ejs" , {
+            pagetitle : "profile",
+            isAuthenticated : req.session.isloggedin,
+            user : user
+        });
+    })
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
+}
 exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productID;
     const userId = req.user._id;

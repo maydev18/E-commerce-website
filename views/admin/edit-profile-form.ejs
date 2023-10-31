@@ -1,0 +1,31 @@
+<%- include('../includes/head.ejs')%>
+<%- include('../includes/nav.ejs')%>
+<body>
+    <% if(errorMessage) {%>
+        <h1 id="heading"><%= errorMessage %></h1>
+    <%}%>
+    <div class="container">
+        <form action="/admin/edit-profile" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" aria-describedby="emailHelp" name="name" value = "<%if(hasError) { %><%=user.name%><% }else if(user.name){%><%=user.name%><% }%>">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email-Address</label>
+                <input type="text" class="form-control" id="email" aria-describedby="emailHelp" name="email" value = "<%if(hasError){%><%=user.email%><% }else if(user.email){%><%=user.email%><%}%>">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="phone" aria-describedby="emailHelp" name="phone" value = "<%if(hasError) { %><%=user.phone%><% } else if(user.phone){%><%=user.phone%><%}%>">
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Profile Photo</label>
+                <input type="file" class="form-control" id="image" aria-describedby="emailHelp" name="image">
+            </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+    </div>
+    <%- include('../includes/footer.ejs')%>
+</body>
+
+</html>

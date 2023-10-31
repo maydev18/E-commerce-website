@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap");
+#profile{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.box {
+  width: 350px;
+  height: fit-content;
+  border-radius: 20px;
+  padding: 10px;
+  text-align: center;
+  background: #ededed;
+}
+
+.box1 {
+  margin-top: 10px;
+}
+
+.content {
+  margin: 15px 2px;
+}
+
+.image img {
+  height: auto;
+  width: 120px;
+  border-radius: 50%;
+
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5px;
+}
+
+.level {
+  font-size: 0.7em;
+  background-color: rgb(164, 189, 183, 0.5);
+  width: 50px;
+  padding: 3px;
+  border-radius: 5px;
+  font-weight: bolder;
+  letter-spacing: 1px;
+
+  display: block;
+  margin: 0px auto 10px;
+}
+#profile-list{
+    list-style: none;
+}
+.name {
+  font-size: 1.25em;
+  font-weight: bolder;
+  letter-spacing: 1px;
+}
+
+
+#profilebutton {
+  width: 130px;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: bolder;
+}
+
+.button {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  margin: 20px 30px 0px;
+}
+
+.button .connect {
+  background-color: #000;
+  color: #ededed;
+  border: none;
+}
+button.connect:hover {
+  letter-spacing: 1px;
+  transition: 0.5s;
+}
+
+@media screen and (max-width: 480px) {
+    .box{
+        width: 100vw;
+        border-radius: 0px;
+    }
+    .button{
+        display: flex;
+        flex-direction: column;
+    }
+    .button button{
+        width: 250px;
+    }
+    button.connect{
+        margin-top: 10px;
+    }
+    .content2{
+        padding: 0px 20px;
+    }
+    .content2 img{
+        width: 60px;
+        height: 60px;
+    }
+}
+/* Responsiveness:End */

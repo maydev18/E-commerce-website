@@ -10,6 +10,8 @@ const router = express.Router();
 
 
 const adminController = require('../controllers/admin.js');
+router.get("/edit-profile" , isAuth , adminController.getEditProfile);
+router.post("/edit-profile" , isAuth , adminController.postEditProfile);
 
 router.get('/add-product', isAuth ,adminController.getAddProducts);
 

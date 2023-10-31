@@ -11,6 +11,15 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    name : {
+        type: String,
+    },
+    phone : {
+        type: String,
+    },
+    imageUrl : {
+        type: String,
+    },
     resetToken : String,
     tokenExpirationTime : Date,
     cart: {

@@ -1,8 +1,70 @@
 const Product = require('../models/product');
+const user = require('../models/user');
+const User = require("../models/user");
 // const ObjectId = require('mongodb').ObjectId;
 
 const fileHelper = require('../utils/file');
 const {validationResult} = require('express-validator');
+exports.getEditProfile = (req ,res , next) => {
+    User.findById(req.user._id)
+    .then(user => {
+        res.render("admin/edit-profile-form.ejs" , {
+            pagetitle : "Edit profile",
+            isAuthenticated : req.session.isloggedin,
+            errorMessage : null,
+            hasError : false,
+            user : user
+        })
+    })
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
+}
+exports.postEditProfile = (req , res , next) => {
+    const updatedName = req.body.name;
+    const updatedEmail = req.body.email;
+    const updatedPhone = req.body.phone;
+    const image = req.file;
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        console.log(errors);
+        return res.status(422).render('admin/edit-product.ejs', 
+            { user: {
+                name : updatedName,
+                email : updatedEmail,
+                phone : updatedPhone,
+            }, 
+            pagetitle: "Edit Profile",
+            path: '/admin/edit-profile', 
+            isAuthenticated : req.session.isloggedin,
+            hasError : true,
+            editing : true,
+            errorMessage : errors.array()[0].msg
+        });
+    }
+    User.findById(req.user._id).then(user => {
+        user.name = updatedName;
+        user.email = updatedEmail;
+        user.phone = updatedPhone;
+        if(image){
+            if(user.imageUrl){
+                fileHelper.deleteFile(user.imageUrl);
+            }
+            user.imageUrl = image.path;
+        }
+        user.save()
+        .then(result=>{
+            res.redirect('/profile');
+        })
+    }).catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
+}
 exports.getAddProducts = (req, res, next) => {
     res.render("admin/edit-product.ejs", {
         pagetitle: "add-product",
