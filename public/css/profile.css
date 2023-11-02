@@ -55,7 +55,7 @@
 
 
 #profilebutton {
-  width: 130px;
+  width: 9em;
   height: 40px;
   border-radius: 10px;
   font-weight: bolder;
@@ -74,7 +74,7 @@
   border: none;
 }
 button.connect:hover {
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   transition: 0.5s;
 }
 

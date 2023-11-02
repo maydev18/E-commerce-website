@@ -20,7 +20,8 @@
             </div>
             <div class="button">
               <div>
-                <button id="profilebutton" class="connect" type="button" onclick="window.open('/admin/edit-profile' , '_self')">Edit Profile</button>
+                <button id="profilebutton" class="connect" type="button" onclick="window.open('/admin/edit-profile' , '_self')" style="width: 6.5em;">Edit Profile</button>
+                <button id="profilebutton" class="connect" type="button" onclick="deleteaccount()" style="background-color: rgb(255, 70, 70);">Delete Account</button>
               </div>
             </div>
           </div>
@@ -30,3 +31,11 @@
 </body>
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<script>
+  function deleteaccount(){
+    let choice = window.confirm('are you sure?');
+    if(choice){
+      window.open('/admin/delete-account' , '_self')
+    }
+  }
+</script>

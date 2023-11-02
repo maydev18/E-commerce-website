@@ -1,6 +1,36 @@
 <%- include('./includes/head.ejs')%>
-<body>
+    <link rel="stylesheet" href="/css/500.css">
+    <link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Condensed:100,200,300,400" rel="stylesheet">
     <%- include('./includes/nav.ejs')%>
-    <h1>Some technical error occured, sorry for the inconvenience caused</h1>
-    <%- include('./includes/footer.ejs')%>
-</body>
+    <body class="loading">
+            <h1>500</h1>
+            <h2>Unexpected Error <b>:(</b></h2>
+            <div class="gears" style="margin-bottom: 15rem;">
+                <div class="gear one">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="gear two">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="gear three">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+        </body>
+        <%- include('./includes/footer.ejs')%>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        $(function () {
+            setTimeout(function () {
+                $('body').removeClass('loading');
+            }, 1000);
+        });
+
+    </script>
+    </html>

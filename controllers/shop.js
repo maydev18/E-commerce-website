@@ -8,7 +8,7 @@ const Review = require("../models/review");
 // const stripe = require('stripe')('sk_test_51NX4AcSI0QNtFF7dckwSjY5HYQdDUAf0yHxPghKkihPPHCTBbk9ogrGjdMYVCVojjtunA1Wza0wdVDlN3UgAMptY00yTEfURQG');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
 const pdf = require('pdfkit');
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 8;
 let total_items;
 exports.getProducts = (req, res, next) => {
     const page = +req.query.page || 1;
@@ -20,16 +20,15 @@ exports.getProducts = (req, res, next) => {
         })
         .then(products => {
             // console.log(products);
+            if(products.length === 0){
+                return next(new Error("No products found"));
+            }
             res.render('shop/product-list.ejs', {
                 prods: products, pagetitle: "home page",
                 path: '/',
                 isAuthenticated: req.session.isloggedin,
-                currentPage: page,
-                hasNextPage: ITEMS_PER_PAGE * page < total_items,
-                hasPrevPage: page > 1,
-                nextPage: page + 1,
-                previousPage: page - 1,
-                lastPage: Math.ceil(total_items / ITEMS_PER_PAGE)
+                totalPages : Math.ceil(total_items/ITEMS_PER_PAGE),
+                currentPage: page
             });
         }).catch(err => {
             const error = new Error(err);
@@ -54,7 +53,10 @@ exports.getProfile = (req , res , next) =>{
 }
 exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productID;
-    const userId = req.user._id;
+    let userId;
+    if(req.user){
+        userId = req.user._id;
+    }
     let prod, prods;
     let user_bought_product = 0;
     Product.findById(productId)
@@ -64,6 +66,9 @@ exports.getProductDetails = (req, res, next) => {
         })
         .then(products => {
             prods = products
+            if(!userId){
+                return [];
+            }
             return Order.find({ 'user.userId': userId })
         })
         .then(orders => {
@@ -75,13 +80,16 @@ exports.getProductDetails = (req, res, next) => {
             return Review.find({ productId: productId })
         })
         .then(reviews => {
+            return Promise.all(reviews.map(review => review.populate('userId')));
+        })
+        .then(userReviews => {
             res.render('shop/product-details.ejs', {
                 user_bought_product: user_bought_product,
                 product: prod,
                 products: prods,
                 pagetitle: prod.title,
                 isAuthenticated: req.session.isloggedin,
-                reviews: reviews
+                reviews: userReviews
             });
         })
         .catch(err => {
@@ -96,14 +104,12 @@ exports.postAddReview = (req , res , next) => {
     const stars = req.body.stars;
     const userId = req.user._id;
     const date = new Date();
-    const name = req.body.name;
     const review = new Review({
         stars : stars,
         description : desc,
         userId : userId,
         productId : prodId,
         date : date,
-        name : name
     })
     review.save()
     .then(result => {
@@ -286,13 +292,4 @@ exports.getInvoice = (req, res, next) => {
     }).catch(err => {
         next(new Error(err));
     })
-    // fs.readFile(invoicePath , (err , data)=>{
-    //     if(err){
-    //         return next(err);
-    //     }
-    //     res.setHeader('Content-Type' , 'application/pdf');
-    //     res.setHeader('Content-Desposition' , 'inline; filename="' + invoiceName + '"');
-    //     res.send(data);
-    // })
-
 }

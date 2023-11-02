@@ -12,7 +12,7 @@ const router = express.Router();
 const adminController = require('../controllers/admin.js');
 router.get("/edit-profile" , isAuth , adminController.getEditProfile);
 router.post("/edit-profile" , isAuth , adminController.postEditProfile);
-
+router.get('/delete-account' , adminController.deleteAccount);
 router.get('/add-product', isAuth ,adminController.getAddProducts);
 
 router.get('/edit-product/:productID' , isAuth ,  adminController.getEditProducts);

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const Product = require('./product');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -56,4 +56,5 @@ userSchema.methods.deleteFromCart = function(prodId){
     this.cart.items = updatedCart;
     return this.save();
 }
+
 module.exports = mongoose.model('User', userSchema);

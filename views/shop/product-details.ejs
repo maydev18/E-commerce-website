@@ -39,7 +39,10 @@
                     <p class="mb-4"><%= product.description.substr(0,100) %><a href="#tab-pane-1"> see-more</a> </p>
                     <%if(isAuthenticated){%>
                         <div class="d-flex align-items-center mb-4 pt-2">
-                            <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                            <form action="/add-to-cart" method="POST">
+                                <input type="hidden" name="id" value="<%= product._id %>">
+                                <button type="submit" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                            </form>
                         </div>
                     <%}%>
                 </div>
@@ -66,9 +69,9 @@
                                         <h4 class="mb-4"> <%= reviews.length %> review for <%= product.title %></h4>
                                         <% reviews.forEach(review => { %>
                                             <div class="media mb-4">
-                                                <img src="/img/user.jpg" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                                <img src="/<%=review.userId.imageUrl%>" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
                                                 <div class="media-body">
-                                                    <h6><%=review.name%><small> - <i><%=review.date.getDate() + ' - ' + review.date.getMonth() + ' - ' + review.date.getFullYear() %></i></small></h6>
+                                                    <h6 style="text-transform: capitalize;"><%=review.userId.name%><small> - <i><%=review.date.getDate() + ' - ' + review.date.getMonth() + ' - ' + review.date.getFullYear() %></i></small></h6>
                                                     <div class="text-primary mb-2">
                                                         <i class="fas fa-star"></i>
                                                         <i class="fas fa-star"></i>
@@ -86,10 +89,6 @@
                                     <div class="col-md-6">
                                         <h4 class="mb-4">Leave a review</h4>
                                         <form action="/submit-review" method="POST">
-                                            <div class="form-group">
-                                                <label for="name">Your Name *</label>
-                                                <input type="text" class="form-control" id="name" name="name">
-                                            </div>
                                             <div class="d-flex my-3 col-md-6">
                                                 <label for="stars" class="form-label">Rating*</label>
                                                 <input type="range" class="form-range ml-2" min="1" max="5" step="0.5" id="stars" name="stars" oninput="this.nextElementSibling.value = this.value">

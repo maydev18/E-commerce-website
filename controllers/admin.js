@@ -1,10 +1,10 @@
 const Product = require('../models/product');
-const user = require('../models/user');
 const User = require("../models/user");
-// const ObjectId = require('mongodb').ObjectId;
-
-const fileHelper = require('../utils/file');
+const Review = require("../models/review");
+const Order = require("../models/order");
+const fileHelper = require("../utils/file");
 const {validationResult} = require('express-validator');
+
 exports.getEditProfile = (req ,res , next) => {
     User.findById(req.user._id)
     .then(user => {
@@ -64,6 +64,36 @@ exports.postEditProfile = (req , res , next) => {
         error.httpStatusCode = 500;
         return next(error);
     });
+}
+exports.deleteAccount = (req , res , next) => {
+    User.findById(req.user._id)
+    .then(user => {
+        fileHelper.deleteFile(user.imageUrl);
+        return Product.deleteMany({userId : req.user._id})
+    })
+    .then(r => {
+       return  User.deleteOne({_id : req.user._id})
+    })
+    .then(r => {
+        return Review.deleteMany({userId : req.user._id})
+    })
+    .then(r => {
+        return Product.deleteMany({userId : req.user._id})
+    })
+    .then(r => {
+        return Order.deleteMany({"user.userId" : req.user._id})
+    })
+    .then(result => {
+        req.session.destroy((err)=>{
+            console.log(err);
+            res.redirect('/');
+        })
+    })
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    })
 }
 exports.getAddProducts = (req, res, next) => {
     res.render("admin/edit-product.ejs", {

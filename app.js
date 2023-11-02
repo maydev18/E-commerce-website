@@ -91,7 +91,7 @@ app.use((error , req , res , next)=>{
     console.log(error);
     res.status(500).render("500.ejs" , {
         pagetitle : "Technical error",
-        isAuthenticated : req.isloggedin
+        isAuthenticated : req.session.isloggedin
     })
 });
 mongoose.connect(MONGODB_URI)

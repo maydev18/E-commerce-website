@@ -1,0 +1,8 @@
+.mybtn:hover{
+    background-color: white;
+    color: black;
+}
+.my-active{
+    background-color: #ffD333;
+    color: black;
+}

@@ -262,7 +262,7 @@
     <!-- Categories End -->
     <% if(prods.length == 0) { %>
         <h1>No products</h1> 
-    <% } %>
+    <% }else{%>
     <div class="container-fluid pt-5 pb-3">
         <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">Featured Products</span></h2>
         <div class="row px-xl-5">
@@ -303,45 +303,20 @@
             <% } %>
         </div>
     </div>
-    <!-- <% if(prods.length > 0) { %>
-        <h1>Showing all the products</h1>   
-        <div class="mybox">
-            <% for(let i = 0 ; i < prods.length ; i++) { %>
-                <div class="card" style="width: 18rem;">
-                    <img class="card-img-top" src='/<%= prods[i].imageUrl %>' alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= prods[i].title %></h5>
-                        <p class="card-text"> <%= prods[i].description %> </p>
-                        <p class="card-text"> $ <%= prods[i].price %> </p>
-                        <p class="card-text"> 
-                        <button class="btn btn-primary mb-3" onclick="window.open('/products/<%= prods[i]._id %>', '_self')">Details</button>
-
-                        <% if (isAuthenticated){%>
-                        <form action="/add-to-cart" method="POST">
-                            <input type="hidden" name="id" value="<%= prods[i]._id %>">
-                            <button type="submit" class="btn btn-primary">add to cart</button>
-                        </form>
-                        <%}%>
-                    </div>
-                </div>
-            <% } %>
-        </div>  -->
+    <nav aria-label="Page navigation example" class="d-flex align-items-center justify-content-center">
+        <ul class="pagination">
+            <%if(currentPage != 1){%>
+                <li class="page-item"><a class="page-link" href="?page=<%=currentPage-1%>">Previous</a></li>
+            <%}%>
+            <%for(let i = 1 ; i <= totalPages ; i++){%>
+                <li class="page-item"><a class="page-link <%if(i == currentPage){%><%='my-active'%><%}%>" href="?page=<%=i%>"><%=i%></a></li>
+            <%}%>
+            <%if(currentPage != totalPages){%>
+                <li class="page-item"><a class="page-link" href="?page=<%=currentPage+1%>">Next</a></li>
+            <%}%>
+        </ul>
+      </nav>
         <!-- Products End -->
-        <div class="my-page">
-            <% if(currentPage != 1 && previousPage != 1){ %>
-                <a class="page-item" href="?page=1">1</a>
-            <% } %>
-            <% if(hasPrevPage){ %>
-                <a class = "page-item" href="?page=<%=previousPage%>"><%=previousPage%></a>
-            <% } %>
-            <a class = "page-item" href="?page=<%=currentPage%>"><%=currentPage%></a>
-            <% if(hasNextPage){ %>
-                <a class = "page-item" href="?page=<%=nextPage%>"><%=nextPage%></a>
-            <% } %>
-            <% if(lastPage != currentPage && nextPage != lastPage){ %>
-                <a class = "page-item" href="?page=<%=lastPage%>"><%=lastPage%></a>
-            <% } %>
-        </div>
     <% } %>
     <%- include('../includes/footer.ejs')%>
 </body>
