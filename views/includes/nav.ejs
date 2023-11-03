@@ -42,13 +42,14 @@
                         <%if(isAuthenticated){%>
                             <a href="/orders" class="nav-item nav-link">Orders</a>
                             <a href="/cart" class="nav-item nav-link">Cart</a>
+                            <a href="/user-orders" class="nav-item nav-link">User Orders</a>
                             <a href="/admin/add-product" class="nav-item nav-link">Add Product</a>
                             <a href="/admin/products" class="nav-item nav-link">Admin Product</a>
                             <a class="nav-item nav-link" href="/logout">Logout</a>
                             <%} else {%>
                                 <a href="/login" class="nav-item nav-link">Login</a>
                                 <a href="/signup" class="nav-item nav-link">Signup</a>
-                                <%}%>
+                            <%}%>
                     </div>
                     <%if(isAuthenticated){%>
                         <a class="navbar-brand d-flex" href="/profile">

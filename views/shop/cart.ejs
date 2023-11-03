@@ -1,7 +1,10 @@
 <%- include('../includes/head.ejs')%>
 <%- include('../includes/nav.ejs')%>
 <body>
-    <%totalcost = 0;
+    <%let totalcost = 0;%>
+    <!-- Button trigger modal -->  
+  <!-- Modal -->
+    <%
     if (products.length == 0) { %>
         <h1>No items in the cart</h1>
     <% } else { %>
@@ -59,16 +62,94 @@
                             <h5>Total</h5>
                             <h5>₹ <%= totalcost%></h5>
                         </div>
-                        <form action="/checkout" method="post">
-                            <input type="hidden" value="<%=totalcost + 1000%>" name="amount">
-                            <button class="btn btn-block btn-primary font-weight-bold my-3 py-3" type="submit">Proceed To Checkout</button>
-                        </form>
+                        
+                            <button type="button" class="btn btn-primary btn-block my-3 py-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Proceed To Checkout
+                              </button>
+                        <!-- </form> -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">shipping address</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form action="/checkout" method="post" id="form">
+                <div class="bg-light p-30">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>First Name</label>
+                            <input class="form-control" type="text" placeholder="Mayank" name="fname">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Last Name</label>
+                            <input class="form-control" type="text" placeholder="Sharma" name="lname">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>E-mail</label>
+                            <input class="form-control" type="email" placeholder="example@email.com" name="email">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Mobile No</label>
+                            <input class="form-control" type="text" placeholder="+91 4566776489" name="phone">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Address Line 1</label>
+                            <input class="form-control" type="text" placeholder="123 Street" name="addr1">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Address Line 2</label>
+                            <input class="form-control" type="text" placeholder="123 Street" name="addr2">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Country</label>
+                            <select class="custom-select" name="country">
+                                <option selected>India</option>
+                                <option>USA</option>
+                                <option>Canada</option>
+                                <option>Dubai</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>City</label>
+                            <input class="form-control" type="text" placeholder="New Delhi" name="city">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>State</label>
+                            <input class="form-control" type="text" placeholder="Delhi" name="state">
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>ZIP Code</label>
+                            <input class="form-control" type="text" placeholder="110000" name="zip">
+                        </div>
+                        <input type="hidden" name="totalcost" value="<%=totalcost%>">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button class="btn btn-primary" type="submit" onclick="document.getElementById('form').submit()">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
     <!-- Cart End -->
     <% } %>
     <%- include('../includes/footer.ejs')%>
 </body>
+<script>
+    const myModal = document.getElementById('myModal')
+    const myInput = document.getElementById('myInput')
+
+    myModal.addEventListener('shown.bs.modal', () => {
+    myInput.focus()
+    })
+</script>
+</html>
