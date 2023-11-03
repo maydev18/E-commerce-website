@@ -11,7 +11,8 @@ router.get("/profile" , shopController.getProfile);
 router.get('/products' ,shopController.getProducts);
 
 router.get('/products/:productID' , shopController.getProductDetails);
-router.post("/submit-review" , shopController.postAddReview);
+router.post("/submit-review" , isAuth , shopController.postAddReview);
+router.post("/delete-review" , isAuth , shopController.deleteReview)
 router.get('/cart' , isAuth ,  shopController.getCart);
 
 router.post('/add-to-cart' , isAuth , shopController.postCart);

@@ -27,7 +27,7 @@
 <!-- Navbar Start -->
 <div class="container-fluid bg-dark mb-30">
     <div class="row px-xl-5">
-        <div class="col-lg-9">
+        <div>
             <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                 <a href="" class="text-decoration-none d-block d-lg-none">
                     <span class="h1 text-uppercase text-dark bg-light px-2">Multi</span>
@@ -45,16 +45,39 @@
                             <a href="/admin/add-product" class="nav-item nav-link">Add Product</a>
                             <a href="/admin/products" class="nav-item nav-link">Admin Product</a>
                             <a class="nav-item nav-link" href="/logout">Logout</a>
-                            <a class="nav-item nav-link" href="/profile">Profile</a>
-
-                        <%} else {%>
-                            <a href="/login" class="nav-item nav-link">Login</a>
-                            <a href="/signup" class="nav-item nav-link">Signup</a>
-                        <%}%>
+                            <%} else {%>
+                                <a href="/login" class="nav-item nav-link">Login</a>
+                                <a href="/signup" class="nav-item nav-link">Signup</a>
+                                <%}%>
                     </div>
+                    <%if(isAuthenticated){%>
+                        <a class="navbar-brand d-flex" href="/profile">
+                            <img id="userProfile" src="" alt="" width="30" height="24">
+                        </a>
+                        <%}%>
                 </div>
             </nav>
         </div>
     </div>
 </div>
+<script>
+
+        const profile = document.getElementById('userProfile');
+        if(profile){
+            let cookies = document.cookie.split(";");
+            console.log(cookies);
+            cookies.forEach(cookie => {
+                let cook = cookie.split('=')
+                console.log(cook);
+                if (cook[0].trim() === "imageUrl") {
+                    cook[1] = decodeURI(cook[1]);
+                    if(cook[1] === "undefined"){
+                        profile.src = "http://localhost:3000/images/default-user-picture.png";
+                    }
+                    else profile.src = '/' + cook[1];
+                    console.log(cook[1]);
+                }
+            })
+        }
+</script>
 <!-- Navbar End -->

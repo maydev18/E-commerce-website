@@ -36,6 +36,4 @@ isAuth , adminController.postEditProduct);
 
 router.delete('/product/:id' , isAuth , adminController.deleteProduct);
 
-module.exports = {
-    "router" : router,
-}
+module.exports = router;

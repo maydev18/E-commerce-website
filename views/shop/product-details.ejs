@@ -3,7 +3,7 @@
 
 <body>
     
-    <!-- Shop Detail Start -->
+<!-- Shop Detail Start -->  
     <div class="container-fluid pb-5">
         <div class="row px-xl-5">
             <div class="col-lg-5 mb-30">
@@ -69,7 +69,7 @@
                                         <h4 class="mb-4"> <%= reviews.length %> review for <%= product.title %></h4>
                                         <% reviews.forEach(review => { %>
                                             <div class="media mb-4">
-                                                <img src="/<%=review.userId.imageUrl%>" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                                <img src="/<%=review.userId.imageUrl%>" alt="Image" class="border border-primary rounded-circle img-fluid mr-3 mt-1" style="width: 45px;">
                                                 <div class="media-body">
                                                     <h6 style="text-transform: capitalize;"><%=review.userId.name%><small> - <i><%=review.date.getDate() + ' - ' + review.date.getMonth() + ' - ' + review.date.getFullYear() %></i></small></h6>
                                                     <div class="text-primary mb-2">
@@ -78,9 +78,17 @@
                                                         <i class="fas fa-star"></i>
                                                         <i class="fas fa-star-half-alt"></i>
                                                         <i class="far fa-star"></i>
+                                                        <p>(<%=review.stars%>)</p>
                                                     </div>
                                                     <p><%=review.description%></p>
                                                 </div>
+                                                <%if(userId.toString() === review.userId._id.toString()){%>
+                                                    <form action="/delete-review" method="post">
+                                                        <input type="hidden" value="<%=review._id%>" name="id">
+                                                        <input type="hidden" name="prodId" value="<%=product._id%>">
+                                                        <button type="submit" class="btn btn-danger" id="deleteBtn">Delete</button>
+                                                    </form>
+                                                <%}%>
                                             </div>
                                         <% }) %>
                                     <%}%>
@@ -91,7 +99,7 @@
                                         <form action="/submit-review" method="POST">
                                             <div class="d-flex my-3 col-md-6">
                                                 <label for="stars" class="form-label">Rating*</label>
-                                                <input type="range" class="form-range ml-2" min="1" max="5" step="0.5" id="stars" name="stars" oninput="this.nextElementSibling.value = this.value">
+                                                <input type="range" class="form-range ml-2" min="1" max="5" step="0.5" id="stars" name="stars">
                                                 <span><p id="starvalue" class="ml-3">2.5</p></span>
                                             </div>
                                             <div class="form-group">
@@ -150,10 +158,17 @@
     <%- include('../includes/footer.ejs')%>
 </body>
 <script>
-    window.onload = () => {
-        document.getElementById("stars").oninput = (event) => {
+    document.getElementById("stars").oninput = (event) => {
         document.getElementById("starvalue").innerText = document.getElementById("stars").value;
-       }
     }
+    document.getElementById("starsm").oninput = (event) => {
+        document.getElementById("starvaluem").innerText = document.getElementById("starsm").value;
+    }
+    const myModal = document.getElementById('myModal')
+    const myInput = document.getElementById('myInput')
+
+    myModal.addEventListener('shown.bs.modal', () => {
+        myInput.focus()
+    })
 </script>
 </html>

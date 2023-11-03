@@ -89,7 +89,8 @@ exports.getProductDetails = (req, res, next) => {
                 products: prods,
                 pagetitle: prod.title,
                 isAuthenticated: req.session.isloggedin,
-                reviews: userReviews
+                reviews: userReviews,
+                userId : req.user._id.toString()
             });
         })
         .catch(err => {
@@ -112,6 +113,19 @@ exports.postAddReview = (req , res , next) => {
         date : date,
     })
     review.save()
+    .then(result => {
+        res.redirect("/products/" + prodId);
+    })
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    })
+}
+exports.deleteReview = (req , res , next) => {
+    const id = req.body.id;
+    const prodId = req.body.prodId;
+    Review.deleteOne({_id : id})
     .then(result => {
         res.redirect("/products/" + prodId);
     })

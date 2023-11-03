@@ -22,7 +22,7 @@
                     <tbody class="align-middle">
                         <% products.forEach(product => { %>
                             <tr>
-                                <td class="align-middle"><img src="/<%=product.productId.imageUrl %>" alt="" style="width: 50px;"><%=product.productId.title %></td>
+                                <td class="align-middle my-td"><img src="/<%=product.productId.imageUrl %>" alt="" style="width: 50px; margin-right: 4rem;"><a href="/products/<%=product.productId._id%>"><%=product.productId.title %></a></td>
                                 <td class="align-middle">₹ <%=product.productId.price %></td>
                                 <td class="align-middle"><%=product.quantity%></td>
                                 <td class="align-middle">₹ <%= product.productId.price * product.quantity %><%totalcost += product.productId.price * product.quantity%></td>

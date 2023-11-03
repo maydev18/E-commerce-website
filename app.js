@@ -3,9 +3,6 @@ const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
-const adminRoute = require("./routes/admin");
-const userRoute = require("./routes/shop");
-const authRoute = require('./routes/auth');
 const app = express();
 const notfound = require('./controllers/error.js');
 const bodyParser = require('body-parser');
@@ -13,6 +10,7 @@ const multer = require('multer');
 const User = require('./models/user');
 const flash = require('connect-flash');
 const csrf = require('csurf');
+const cookieParser = require("cookie-parser");
 
 
 // const helmet = require("helmet");
@@ -22,12 +20,11 @@ const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO
 const store = new MongoDBStore({
     uri: MONGODB_URI,
     collection: 'sessions'
-});
-app.set('view engine', 'ejs');
+});app.set('view engine', 'ejs');
 app.set('views', 'views');//not needed as it is default.
 
 // app.use(helmet());
-
+app.use(cookieParser());
 app.use(compression());
 
 app.use(bodyParser.urlencoded({extended : false}));
@@ -52,7 +49,7 @@ app.use(multer({
 }).single('image'));
 
 app.use(
-    session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store })
+    session({ name : "session-cookie" , maxAge: 1000 * 60 * 60 * 24 , secret: 'my secret', resave: false, saveUninitialized: false, store: store })
 );
 
 app.use(flash());
@@ -66,17 +63,16 @@ app.use((req, res, next) => {
             req.user = user;
             next();
         }).catch(err => {
-            // console.log(err);
             next(new Error(err));
         });
     }
 });
 
-app.use('/admin', adminRoute.router);
+app.use('/admin', require("./routes/admin.js"));
 
-app.use(userRoute);
+app.use(require("./routes/shop.js"));
 
-app.use(authRoute);
+app.use(require("./routes/auth.js"));
 
 app.use(express.static(path.join(__dirname, 'public')))//static middleware
 app.use('/images' , express.static(path.join(__dirname, 'images')))//static middleware

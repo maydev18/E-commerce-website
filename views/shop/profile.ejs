@@ -5,7 +5,7 @@
         <div class="box1 box">
           <div class="content">
             <div class="image">
-              <img src="<%if(user.imageUrl){%>/<%=user.imageUrl%><%}else{%><%='https://i.postimg.cc/bryMmCQB/profile-image.jpg'%><%}%>" alt="Profile Image">
+              <img src="<%if(user.imageUrl){%>/<%=user.imageUrl%><%}else{%><%='http://localhost:3000/images/default-user-picture.png'%><%}%>" alt="Profile Image">
             </div>
             <div class="text">
               <p class="name"><%if(user.name){%> <%=user.name%> <%}else{%> Add your name <%}%></p>

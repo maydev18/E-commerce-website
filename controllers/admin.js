@@ -54,6 +54,7 @@ exports.postEditProfile = (req , res , next) => {
                 fileHelper.deleteFile(user.imageUrl);
             }
             user.imageUrl = image.path;
+            res.cookie("imageUrl" , user.imageUrl);
         }
         user.save()
         .then(result=>{
@@ -68,7 +69,9 @@ exports.postEditProfile = (req , res , next) => {
 exports.deleteAccount = (req , res , next) => {
     User.findById(req.user._id)
     .then(user => {
-        fileHelper.deleteFile(user.imageUrl);
+        if(user.imageUrl){
+            fileHelper.deleteFile(user.imageUrl);
+        }
         return Product.deleteMany({userId : req.user._id})
     })
     .then(r => {

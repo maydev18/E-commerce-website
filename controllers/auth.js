@@ -32,6 +32,7 @@ exports.postLogin = (req , res , next) => {
                 if(doMatched){
                     req.session.isloggedin = true;
                     req.session.user = user;
+                    res.cookie("imageUrl" , user.imageUrl);
                     req.session.save(err=>{
                         console.log(err);
                         res.redirect('/');
@@ -119,7 +120,7 @@ exports.postSignup = (req , res , next) => {
                 const user = new User({
                     email : email,
                     password : hashedpass,
-                    cart : {items : []}
+                    cart : {items : []},
                 });
                 return user.save();
             })

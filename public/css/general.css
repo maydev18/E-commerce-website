@@ -6,3 +6,14 @@
     background-color: #ffD333;
     color: black;
 }
+#userProfile{
+    height: 2.5em;
+    width: auto;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+.my-td{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
