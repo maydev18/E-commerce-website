@@ -20,7 +20,11 @@ const userSchema = new Schema({
     imageUrl : {
         type: String,
     },
-    resetToken : String,
+    verified : {
+        type : Boolean,
+        default : false
+    },
+    token : String,
     tokenExpirationTime : Date,
     cart: {
         items: [{ productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, quantity: { type: Number, required: true } }]

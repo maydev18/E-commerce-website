@@ -21,7 +21,7 @@ router.get('/signup' , authController.getSignup);
 
 router.post('/signup' , check('email').isEmail().withMessage("please enter a valid email").normalizeEmail(), check('pass').trim(),check("cnfPass").trim() , authController.postSignup);
 
-
+router.get('/verify/:token' , authController.verifyProfile);
 router.get('/reset' , authController.getReset);
 
 router.post('/reset' , authController.postReset);

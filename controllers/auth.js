@@ -27,35 +27,42 @@ exports.postLogin = (req , res , next) => {
     const pass = req.body.pass;
     User.findOne({email : email}).then(user => {
         if(user){
-            bcrypt.compare(pass , user.password)
-            .then(doMatched => {
-                if(doMatched){
-                    req.session.isloggedin = true;
-                    req.session.user = user;
-                    res.cookie("imageUrl" , user.imageUrl);
-                    req.session.save(err=>{
-                        console.log(err);
-                        res.redirect('/');
-                    });
-                }
-                else{
-                    req.flash('error' , "wrong password");
-                    res.render('auth/login.ejs' , {
-                        pagetitle : 'Login',
-                        path : '/login',
-                        isAuthenticated : req.session.isloggedin,
-                        errorMessage : "wrong password",
-                        oldInput : {
-                            email : email,
-                            password : pass
-                        }
-                    });
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                res.redirect('/login');
-            })  
+            if(user.verified){
+                bcrypt.compare(pass , user.password)
+                .then(doMatched => {
+                    if(doMatched){
+                        req.session.isloggedin = true;
+                        req.session.user = user;
+                        res.cookie("imageUrl" , user.imageUrl);
+                        req.session.save(err=>{
+                            console.log(err);
+                            res.redirect('/');
+                        });
+                    }
+                    else{
+                        req.flash('error' , "wrong password");
+                        res.render('auth/login.ejs' , {
+                            pagetitle : 'Login',
+                            path : '/login',
+                            isAuthenticated : req.session.isloggedin,
+                            errorMessage : "wrong password",
+                            oldInput : {
+                                email : email,
+                                password : pass
+                            }
+                        });
+                    }
+                })
+            }
+            else{
+                generateVerifyToken(email , (user) => {
+                    sendVerificationEmail(user , req.protocol + '://' + req.get('host'))
+                    res.render('auth/verify-account.ejs' , {
+                        pagetitle : "Verify Account",
+                        isAuthenticated : false
+                    })
+                })
+            }
         }
         else{
             req.flash('error' , "No account exists");
@@ -90,7 +97,41 @@ exports.getSignup = (req , res , next) => {
         oldInput : {email : "" , pass : "" , cnfPass : ""}
     });
 };
-
+const generateVerifyToken = (email , cb) => {
+    crypto.randomBytes(32 , (err , buffer)=>{
+        if(err){
+            console.log(err);
+            return res.redirect('/login');
+        }
+        const token = buffer.toString('hex');
+        User.findOne({email : email})
+        .then(user => {
+            user.token = token;
+            user.tokenExpirationTime = Date.now() + 3600000;
+            return user.save();
+        })
+        .then(user => {
+            cb(user);
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
+    })
+}
+const sendVerificationEmail = (user , url) => {
+    url = url + "/verify/" + user.token;
+    const mailOptions = {
+        from: 'ms772254@gmail.com',
+        to: user.email,
+        subject: 'Verify Your Account',
+        html : `
+            <p>Please click <a href = ${url}>here</a> to verify your email </p>
+        `
+    };
+    mail.mail(mailOptions);
+}
 exports.postSignup = (req , res , next) => {
     const email = req.body.email;
     const pass = req.body.pass;
@@ -125,16 +166,18 @@ exports.postSignup = (req , res , next) => {
                 return user.save();
             })
             .then(result => {
-                const mailOptions = {
-                    from: 'ms772254@gmail.com',
-                    to: email,
-                    subject: 'Welcome user',
-                    text: 'what are you doing'
-                };
-                mail.mail(mailOptions);
-                
-                res.redirect('/login');
+                generateVerifyToken(result.email , ( user =>{
+                    sendVerificationEmail(user , req.protocol + '://' + req.get('host'))
+                    res.render('auth/verify-account.ejs' , {
+                        pagetitle : "Verify Account",
+                        isAuthenticated : false
+                    })
+                }));
             })
+            // .then(result => {
+            //     
+            //     res.redirect('/login');
+            // })
         }
     })
     .catch(err => {
@@ -143,7 +186,38 @@ exports.postSignup = (req , res , next) => {
         return next(error);
     })
 }
-
+exports.verifyProfile = (req , res , next) => {
+    const token = req.params.token;
+    User.findOne({token : token , tokenExpirationTime : {
+        $gte : new Date().toISOString()
+    }})
+    .then(user => {
+        if(!user){
+            req.flash('error' , 'no such token found');
+            return res.redirect('/login');
+        }
+        user.verified = true;
+        return user.save()
+    })
+    .then(user => {
+        const mailOptions = {
+            from: 'ms772254@gmail.com',
+            to: user.email,
+            subject: 'Welcome user',
+            text: 'indian-shop(dot)com welcomes yous to our e-commerce website. You can now purchase products or sell your own'
+        };
+        mail.mail(mailOptions);
+        res.render('auth/account-verified.ejs' , {
+            pagetitle : 'Account verified successfully',
+            isAuthenticated : false,
+        });
+    })
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    })
+}
 exports.getReset = (req , res , next) => {
     let msg = req.flash("error");
     if(msg.length > 0){
@@ -170,13 +244,12 @@ exports.postReset = (req , res , next) => {
                 req.flash('error' , 'no account with such email found');
                 return res.redirect('/reset');
             }
-            user.resetToken = token;
+            user.token = token;
             user.tokenExpirationTime = Date.now() + 3600000;
             return user.save();
         })
         .then(result => {
-            console.log(req.body.baseurl);
-            url = req.body.baseurl + "/" + token;
+            url = req.protocol + '://' + req.get('host') + "/" + token;
             const mailOptions = {
                 from: 'ms772254@gmail.com',
                 to: req.body.email,
@@ -204,7 +277,7 @@ exports.getResetPassword = (req , res , next) => {
     }
     else msg = null;
     const token = req.params.token;
-    User.findOne({resetToken : token , tokenExpirationTime : {
+    User.findOne({token : token , tokenExpirationTime : {
         $gte : new Date().toISOString()
     }}).then(user => {
         if(!user){
@@ -243,7 +316,7 @@ exports.postSetNewPassword = (req , res , next) => {
         bcrypt.hash(newpass , 12)
         .then(hashedpass => {
             user.password = hashedpass;
-            user.resetToken = undefined;
+            user.token = undefined;
             user.tokenExpirationTime = undefined;
             return user.save();
         })
