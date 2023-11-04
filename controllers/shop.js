@@ -1,16 +1,13 @@
-
 const Product = require('../models/product');
 const User = require('../models/user');
-const fs = require('fs');
 const path = require('path');
 const Order = require('../models/order');
 const Review = require("../models/review");
 // const stripe = require('stripe')('sk_test_51NX4AcSI0QNtFF7dckwSjY5HYQdDUAf0yHxPghKkihPPHCTBbk9ogrGjdMYVCVojjtunA1Wza0wdVDlN3UgAMptY00yTEfURQG');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
-const pdf = require('pdfkit');
-const product = require('../models/product');
 const ITEMS_PER_PAGE = 8;
 const mail = require("../utils/sendmail");
+const invoiceGenerator = require("../utils/invoice");
 exports.getProducts = (req, res, next) => {
     let total_items;
     const page = +req.query.page || 1;
@@ -21,7 +18,6 @@ exports.getProducts = (req, res, next) => {
             return Product.find().skip((page - 1) * ITEMS_PER_PAGE).limit(ITEMS_PER_PAGE);
         })
         .then(products => {
-            // console.log(products);
             if(products.length === 0){
                 return next(new Error("No products found"));
             }
@@ -158,7 +154,6 @@ exports.getCart = async (req, res, next) => {
         return req.user.populate('cart.items.productId');
     })
     .then(user => {
-        console.log(user.cart.items);
         res.render('shop/cart', {
             products: user.cart.items,
             pagetitle: 'cart',
@@ -256,7 +251,6 @@ exports.getCheckoutSuccess = (req, res, next) => {
     let orderId = req.query.orderId;
     let order;
     let prods;
-    console.log(orderId);
     Order.findById(orderId)
     .then(odr => {
         order = odr;
@@ -314,42 +308,23 @@ exports.getOrders = (req, res, next) => {
         return next(error);
     });
 };
-
 exports.getInvoice = (req, res, next) => {
     const orderId = req.params.orderId;
     Order.findById(orderId).then(order => {
         if (!order) {
             return next(new Error('No order found'));
         }
-        if (order.user.userId.toString() !== req.user._id.toString()) {
+        if (order.user.toString() !== req.user._id.toString()) {
             return next(new Error("Unauthorized"));
         }
         const invoiceName = 'invoice-' + orderId + '.pdf';
         const invoicePath = path.join('data', 'invoices', invoiceName);
-        const pdfDoc = new pdf();
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Desposition', 'inline; filename="' + invoiceName + '"');
-        pdfDoc.pipe(fs.createWriteStream(invoicePath));
-        pdfDoc.pipe(res);
-        pdfDoc.fontSize(26).text("invoice", {
-            underline: true
-        });
-        pdfDoc.text("---------------------------");
-        let tot = 0;
-        let curr = 1;
-        order.products.forEach(prod => {
-            tot += prod.quantity * prod.product.price;
-            pdfDoc.fontSize(14).text(curr + "." + prod.product.title + " - " + prod.quantity + ' $' + prod.product.price);
-            curr++;
-        })
-        pdfDoc.text('-----------------------------');
-        pdfDoc.text("Total amount is : " + tot);
-        pdfDoc.end();
+        const logoPath = path.join('images' , "pdflogo.PNG");
+        invoiceGenerator(order , invoicePath , invoiceName , logoPath , res);
     }).catch(err => {
         next(new Error(err));
     })
 }
-
 exports.getUserOrders = (req , res , next) => {
     let orderDetails = [];
     Order.find()

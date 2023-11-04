@@ -1,0 +1,80 @@
+<%- include('../includes/head.ejs')%>
+    <%- include('../includes/nav.ejs')%>
+        <link href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+        <style>
+            .dataTables_wrapper{
+                margin: 0 1.5rem 0 1.5rem;
+            }
+            @media (max-width: 800px){
+                #myTable{
+                    display: inline-block;
+                    margin: auto;
+                    overflow: auto;
+                }
+                .dataTables_wrapper{
+                    margin: auto;
+                }
+            }
+        </style>
+        <body>
+            <div class="container-fluid">
+                <table class="table" id="myTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">S. No.</th>
+                            <th scope="col">Order Date</th>
+                            <th scope="col">Buyer Name</th>
+                            <th scope="col">Buyer Email</th>
+                            <th scope="col">Buyer Phone</th>
+                            <th scope="col">Full Address</th>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <%orderDetails.forEach((order , index) => { %>
+                            <tr>
+                                <th scope='row'><%=index+1%></th>
+                                <td scope='row'><%=order.date.getDate() + ' - ' + order.date.getMonth() + ' - ' + order.date.getFullYear() %></td>
+                                <td><%=order.fname%></td>
+                                <td><%=order.email%></td>
+                                <td><%=order.phone%></td>
+                                <td><%=order.fulladdr%></td>
+                                <td><a href="/products/<%=order.productId%>"><%=order.productName%></a></td>
+                                <td><%=order.quantity%></td>
+                                <form action="/order/completed" method="post">
+                                    <input type="hidden" value="<%=order.orderId%>" name="orderId">
+                                    <input type="hidden" value="<%=order.productId%>" name="productId">
+                                </form>
+                                <td>
+                                    <%if(order.completed){%>
+                                        Completed
+                                    <%}else{%>
+                                        <div class="form-check my-check"><input class="form-check-input" type="checkbox"><label class="form-check-label" for="check">Mark delivered</label></div>
+                                    <%}%>
+                                </td>
+                            </tr>
+                        <%})%>
+                    </tbody>
+                </table>
+            </div>
+            <%- include('../includes/footer.ejs')%>
+        </body>
+            <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"> </script>
+        <script>
+            let table = new DataTable('#myTable');
+            const chk = document.getElementsByClassName('my-check');
+            Array.from(chk).forEach(checkbox => {
+               checkbox.addEventListener('change' , (input)=>{
+                if(window.confirm("are you sure?")){
+                    checkbox.parentNode.parentNode.childNodes[17].submit();
+                }
+                else{
+                    checkbox.firstChild.checked = false;
+                }
+               })
+            })
+        </script>
+
+        </html>
