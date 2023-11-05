@@ -249,7 +249,7 @@ exports.postReset = (req , res , next) => {
             return user.save();
         })
         .then(result => {
-            url = req.protocol + '://' + req.get('host') + "/" + token;
+            url = req.protocol + '://' + req.get('host') + "/reset/" + token;
             const mailOptions = {
                 from: 'ms772254@gmail.com',
                 to: req.body.email,
