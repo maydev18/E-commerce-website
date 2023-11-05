@@ -5,13 +5,13 @@ const router = express.Router();
 
 const authController = require('../controllers/auth.js');
 
-const {check} = require('express-validator');
+const {body} = require('express-validator');
 
 router.get('/login' , authController.getLogin);
 
 router.post('/login' ,[
-    check('email').isEmail().withMessage("please enter a valid mail").normalizeEmail(),
-    check('pass').trim()
+    body('email').isEmail().withMessage("please enter a valid mail").normalizeEmail(),
+    body('pass').trim()
 
 ] ,authController.postLogin);
 
@@ -19,9 +19,10 @@ router.get('/logout' , authController.postLogout);
 
 router.get('/signup' , authController.getSignup);
 
-router.post('/signup' , check('email').isEmail().withMessage("please enter a valid email").normalizeEmail(), check('pass').trim(),check("cnfPass").trim() , authController.postSignup);
+router.post('/signup' , body('email').isEmail().withMessage("please enter a valid email").normalizeEmail(), body('pass').trim(),body("cnfPass").trim() , authController.postSignup);
 
 router.get('/verify/:token' , authController.verifyProfile);
+
 router.get('/reset' , authController.getReset);
 
 router.post('/reset' , authController.postReset);

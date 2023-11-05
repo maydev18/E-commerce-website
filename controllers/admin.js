@@ -4,6 +4,7 @@ const Review = require("../models/review");
 const Order = require("../models/order");
 const fileHelper = require("../utils/file");
 const {validationResult} = require('express-validator');
+const product = require('../models/product');
 
 exports.getEditProfile = (req ,res , next) => {
     User.findById(req.user._id)
@@ -22,30 +23,33 @@ exports.getEditProfile = (req ,res , next) => {
         return next(error);
     });
 }
+
 exports.postEditProfile = (req , res , next) => {
     const updatedName = req.body.name;
     const updatedEmail = req.body.email;
     const updatedPhone = req.body.phone;
     const image = req.file;
-
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         console.log(errors);
-        return res.status(422).render('admin/edit-product.ejs', 
-            { user: {
+        return res.render("admin/edit-profile-form.ejs" , {
+            user : {
                 name : updatedName,
                 email : updatedEmail,
-                phone : updatedPhone,
-            }, 
-            pagetitle: "Edit Profile",
-            path: '/admin/edit-profile', 
+                phone : updatedPhone
+            },
+            errorMessage : errors.array()[0].msg,
+            pagetitle : "Edit profile",
             isAuthenticated : req.session.isloggedin,
+            errorMessage : errors.array()[0].msg,
             hasError : true,
-            editing : true,
-            errorMessage : errors.array()[0].msg
-        });
+        })
     }
-    User.findById(req.user._id).then(user => {
+    User.findById(req.user._id)
+    .then(user => {
+        if(user.email !== updatedEmail){
+            user.verified = false;
+        }
         user.name = updatedName;
         user.email = updatedEmail;
         user.phone = updatedPhone;
@@ -58,7 +62,16 @@ exports.postEditProfile = (req , res , next) => {
         }
         user.save()
         .then(result=>{
-            res.redirect('/profile');
+            if(!result.verified){
+                req.session.destroy((err)=>{
+                    console.log(err);
+                    res.render('auth/verify-account.ejs' , {
+                        pagetitle : "Verify Account",
+                        isAuthenticated : false
+                    })
+                })
+            }
+            else res.redirect('/profile');
         })
     }).catch(err => {
         const error = new Error(err);
@@ -72,10 +85,16 @@ exports.deleteAccount = (req , res , next) => {
         if(user.imageUrl){
             fileHelper.deleteFile(user.imageUrl);
         }
+        return Product.find({userId : req.user._id})
+    })
+    .then(products => {
+        products.forEach(pro => {
+            fileHelper.deleteFile(pro.imageUrl);
+        })
         return Product.deleteMany({userId : req.user._id})
     })
     .then(r => {
-       return  User.deleteOne({_id : req.user._id})
+        return  User.deleteOne({_id : req.user._id})
     })
     .then(r => {
         return Review.deleteMany({userId : req.user._id})
@@ -130,20 +149,18 @@ exports.postAddProduct = (req, res, next) => {
         });
     }
     if(!errors.isEmpty()){
-        console.log(errors.array())
         return res.status(422).render('admin/edit-product.ejs', 
         { product: {
-            title : title,
-            price : price,
-            description : description,
-            imageUrl : imageUrl
-        }, 
-        pagetitle: "Add Product",
-        path: '/admin/', 
-        isAuthenticated : req.session.isloggedin,
-        hasError : true,
-        editing : false,
-        errorMessage : errors.array()[0].msg
+                title : title,
+                price : price,
+                description : description,
+                imageUrl : imageUrl
+            }, 
+            pagetitle: "Add Product",
+            isAuthenticated : req.session.isloggedin,
+            hasError : true,
+            editing : false,
+            errorMessage : errors.array()[0].msg
         });
     }
     const product = new Product({
@@ -186,7 +203,9 @@ exports.getEditProducts = (req , res , next) =>{
         return res.redirect('/');
     }
     Product.findById(id).then(product=>{
-        console.log(product);
+        if(product.userId.toString() !== req.user._id.toString()){
+            return res.redirect('/products');
+        }
         res.render('admin/edit-product.ejs' , {
             pagetitle : 'edit-product',
             editing : true,
@@ -210,7 +229,6 @@ exports.postEditProduct = (req , res , next) =>{
     const image = req.file;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        console.log(errors.array())
         return res.status(422).render('admin/edit-product.ejs', 
         { product: {
             title : updatedTitle,
@@ -255,16 +273,15 @@ exports.deleteProduct = (req , res , next) => {
         if(!product){
             return next(new Error('product not found'));
         }
+        if(product.userId.toString() !== req.user._id.toString()){
+            return res.status(401).json({message : "Unauthorized"})
+        }
         fileHelper.deleteFile(product.imageUrl);
         return Product.deleteOne({_id : id , userId : req.user._id});
     })
     .then(result => {
-        console.log(result);
         res.status(200).json({message : "success"})
     }).catch(err => {
-        // const error = new Error(err);
-        // error.httpStatusCode = 500;
-        // return next(error);
         res.status(500).json({message : "deleting failed"})
     });
 }

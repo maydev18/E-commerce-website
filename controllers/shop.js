@@ -3,7 +3,6 @@ const User = require('../models/user');
 const path = require('path');
 const Order = require('../models/order');
 const Review = require("../models/review");
-// const stripe = require('stripe')('sk_test_51NX4AcSI0QNtFF7dckwSjY5HYQdDUAf0yHxPghKkihPPHCTBbk9ogrGjdMYVCVojjtunA1Wza0wdVDlN3UgAMptY00yTEfURQG');
 const stripe = require('stripe')(process.env.STRIPE_KEY);
 const ITEMS_PER_PAGE = 8;
 const mail = require("../utils/sendmail");
@@ -51,10 +50,6 @@ exports.getProfile = (req , res , next) =>{
 }
 exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productID;
-    let userId;
-    if(req.user){
-        userId = req.user._id;
-    }
     let prod, prods;
     let user_bought_product = 0;
     Product.findById(productId)
@@ -64,10 +59,7 @@ exports.getProductDetails = (req, res, next) => {
         })
         .then(products => {
             prods = products
-            if(!userId){
-                return [];
-            }
-            return Order.find({ 'user.userId': userId })
+            return Order.find({ 'user': req.user._id})
         })
         .then(orders => {
             orders.forEach(order => {

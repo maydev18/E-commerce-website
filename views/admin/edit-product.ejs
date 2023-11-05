@@ -1,19 +1,18 @@
 <%- include('../includes/head.ejs')%>
+<% if(errorMessage) {%>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!!</strong><%= errorMessage%>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<%}%>
 <%- include('../includes/nav.ejs')%>
 <body>
-    <% if(errorMessage) {%>
-        <h1 id="heading"><%= errorMessage %></h1>
-    <%}%>
     <div class="container">
         <form action="/admin/<%if(editing){%>edit-product<% }else{%>add-product<%}%>" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" class="form-control" id="title" aria-describedby="emailHelp" name="title" value = "<%if(editing || hasError) { %><%=product.title%><% } %>">
             </div>
-            <!-- <div class="mb-3">
-                <label for="imageurl" class="form-label">image url</label>
-                <input type="text" class="form-control" id="image url" aria-describedby="emailHelp" name="imageurl" value = "<%if(editing || hasError) { %> <%=product.imageUrl%> <% } %>">
-            </div> -->
             <div class="mb-3">
                 <label for="price" class="form-label">price</label>
                 <input type="text" class="form-control" id="price" aria-describedby="emailHelp" name="price" value = "<%if(editing || hasError) { %><%=product.price%><% } %>">
