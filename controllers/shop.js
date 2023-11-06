@@ -59,14 +59,16 @@ exports.getProductDetails = (req, res, next) => {
         })
         .then(products => {
             prods = products
-            return Order.find({ 'user': req.user._id})
+            return Order.find({ 'user': req.user? req.user._id : null})
         })
         .then(orders => {
-            orders.forEach(order => {
-                order.products.forEach(product => {
-                    if (product.product._id.toString() === productId.toString()) user_bought_product = 1;
+            if(orders){
+                orders.forEach(order => {
+                    order.products.forEach(product => {
+                        if (product.product._id.toString() === productId.toString()) user_bought_product = 1;
+                    })
                 })
-            })
+            }
             return Review.find({ productId: productId })
         })
         .then(reviews => {
@@ -80,7 +82,7 @@ exports.getProductDetails = (req, res, next) => {
                 pagetitle: prod.title,
                 isAuthenticated: req.session.isloggedin,
                 reviews: userReviews,
-                userId : req.user._id.toString()
+                userId : req.user ? req.user._id.toString() : null
             });
         })
         .catch(err => {

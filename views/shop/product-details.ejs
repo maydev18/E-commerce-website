@@ -82,7 +82,7 @@
                                                     </div>
                                                     <p><%=review.description%></p>
                                                 </div>
-                                                <%if(userId.toString() === review.userId._id.toString()){%>
+                                                <%if(userId && userId.toString() === review.userId._id.toString()){%>
                                                     <form action="/delete-review" method="post">
                                                         <input type="hidden" value="<%=review._id%>" name="id">
                                                         <input type="hidden" name="prodId" value="<%=product._id%>">
