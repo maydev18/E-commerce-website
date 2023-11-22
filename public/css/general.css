@@ -8,7 +8,7 @@
 }
 #userProfile{
     height: 2.5em;
-    width: auto;
+    width: 3rem;
     border-radius: 50%;
     border: 2px solid white;
 }
@@ -16,4 +16,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
+}
+.product-image{
+    height: 50vh;
 }

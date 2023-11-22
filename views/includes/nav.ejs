@@ -53,9 +53,9 @@
                     </div>
                     <%if(isAuthenticated){%>
                         <a class="navbar-brand d-flex" href="/profile">
-                            <img id="userProfile" src="" alt="" width="30" height="24">
+                            <img id="userProfile" src="" alt="">
                         </a>
-                        <%}%>
+                    <%}%>
                 </div>
             </nav>
         </div>
@@ -73,7 +73,7 @@
                 if (cook[0].trim() === "imageUrl") {
                     cook[1] = decodeURI(cook[1]);
                     if(cook[1] === "undefined"){
-                        profile.src = "http://localhost:3000/images/default-user-picture.png";
+                        profile.src = "/images/default-user-picture.png";
                     }
                     else profile.src = '/' + cook[1];
                     console.log(cook[1]);

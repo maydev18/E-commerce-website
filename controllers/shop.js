@@ -316,7 +316,9 @@ exports.getInvoice = (req, res, next) => {
         const logoPath = path.join('images' , "pdflogo.PNG");
         invoiceGenerator(order , invoicePath , invoiceName , logoPath , res);
     }).catch(err => {
-        next(new Error(err));
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
     })
 }
 exports.getUserOrders = (req , res , next) => {

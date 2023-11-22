@@ -22,8 +22,8 @@
 }
 
 .image img {
-  height: auto;
-  width: 120px;
+  height: 35vh;
+  width: 35vh;
   border-radius: 50%;
 
   display: block;
@@ -52,7 +52,6 @@
   font-weight: bolder;
   letter-spacing: 1px;
 }
-
 
 #profilebutton {
   width: 9em;
